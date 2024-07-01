@@ -20,6 +20,15 @@
                         @method('DELETE')
                         <x-danger-button type="submit">delete</x-danger-button>
                     </form>
+                    @foreach($post->comments as $comment)
+                        {{$comment->user->name}} : {{$comment->body}}
+                    @endforeach
+                    <form action="{{route('comments.store')}}" method="post">
+                        @csrf
+                         <x-text-input placeholder="add comment" name="body"></x-text-input>
+                         <x-text-input type="hidden" name="post_id" value="{{$post->id}}"></x-text-input>
+                        <x-danger-button type="submit">add</x-danger-button>
+                    </form>
                 </div>
             </div>
         </div>
