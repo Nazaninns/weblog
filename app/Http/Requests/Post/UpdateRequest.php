@@ -24,6 +24,7 @@ class UpdateRequest extends FormRequest
         return [
             'title' => ['required', 'string','between:2,100'],
             'content' => ['required', 'string','between:2,255'],
+            'tags' => ['nullable', 'array'],
         ];
     }
 }
