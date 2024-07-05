@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Post\StoreRequest;
 use App\Http\Requests\Post\UpdateRequest;
 use App\Models\Post;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -17,7 +18,7 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::all();
-        return view('post.index',compact('posts'));
+        return view('post.index', compact('posts'));
     }
 
     /**
@@ -53,8 +54,8 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        Gate::authorize('update',$post);
-        return view('post.edit',compact('post'));
+        Gate::authorize('update', $post);
+        return view('post.edit', compact('post'));
     }
 
     /**
@@ -62,9 +63,14 @@ class PostController extends Controller
      */
     public function update(UpdateRequest $request, Post $post)
     {
-        Gate::authorize('update',$post);
+        Gate::authorize('update', $post);
         $validated = $request->validated();
         $post->update($validated);
+        $tags = [];
+        foreach ($validated['tags'] as $tag) {
+            $tags[] = Tag::query()->firstOrCreate(['name' => $tag])->id;
+        }
+        $post->tags()->sync($tags);
         return redirect()->route('posts.index');
     }
 
@@ -73,7 +79,7 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        Gate::authorize('delete',$post);
+        Gate::authorize('delete', $post);
         $post->delete();
         return redirect()->route('posts.index');
     }

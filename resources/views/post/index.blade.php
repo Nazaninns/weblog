@@ -1,28 +1,45 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-start gap-8">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('posts') }}
-        </h2>
-        <a href="{{route('posts.create')}}"><x-primary-button >new post</x-primary-button></a>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ __('posts') }}
+            </h2>
+            <a href="{{route('posts.create')}}">
+                <x-primary-button>new post</x-primary-button>
+            </a>
         </div>
     </x-slot>
     @foreach($posts as $post)
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    <h1>{{$post->title}}</h1>
-                    <p>{{$post->content}}</p>
-                    <a href="{{route('posts.edit',$post)}}"><x-secondary-button>edit</x-secondary-button></a>
-                    <form action="{{route('posts.destroy',$post)}}" method="post">
-                        @csrf
-                        @method('DELETE')
-                        <x-danger-button type="submit">delete</x-danger-button>
-                    </form>
+        <div class="py-12">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+                <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                    <div class="max-w-xl">
+                        <h1>{{$post->title}}</h1>
+                        <p>{{$post->content}}</p>
+                        <a href="{{route('posts.edit',$post)}}">
+                            <x-secondary-button>edit</x-secondary-button>
+                        </a>
+                        <form action="{{route('posts.destroy',$post)}}" method="post">
+                            @csrf
+                            @method('DELETE')
+                            <x-danger-button type="submit">delete</x-danger-button>
+                        </form>
+                        @foreach($post->comments as $comment)
+                            {{$comment->user->name}} : {{$comment->body}}
+                        @endforeach
+                        <form action="{{route('comments.store')}}" method="post">
+                            @csrf
+                            <x-text-input placeholder="add comment" name="body"></x-text-input>
+                            <x-text-input type="hidden" name="post_id" value="{{$post->id}}"></x-text-input>
+                            <x-danger-button type="submit">add</x-danger-button>
+                        </form>
+
+                        @foreach($post->tags as $tag)
+                            <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mt-2 mr-2 mb-2">#{{ $tag->name }}</span>
+                        @endforeach
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     @endforeach
 </x-app-layout>
